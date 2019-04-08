@@ -72,7 +72,8 @@ check_new_ver(){
 版本列表请去这里获取：${Green_font_prefix}[ https://github.com/txthinking/brook/releases ]${Font_color_suffix}"
 	read -e -p "直接回车即自动获取:" brook_new_ver
 	if [[ -z ${brook_new_ver} ]]; then
-		brook_new_ver=$(wget -qO- https://api.github.com/repos/txthinking/brook/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g')
+		# brook_new_ver=$(wget -qO- https://api.github.com/repos/txthinking/brook/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g')
+		brook_new_ver=$(curl -s https://api.github.com/repos/USER/REPO/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 		[[ -z ${brook_new_ver} ]] && echo -e "${Error} Brook 最新版本获取失败！" && exit 1
 		echo -e "${Info} 检测到 Brook 最新版本为 [ ${brook_new_ver} ]"
 	else
@@ -112,14 +113,14 @@ Download_brook(){
 }
 Service_brook(){
 	if [[ ${release} = "centos" ]]; then
-		if ! wget --no-check-certificate "https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/brook_centos" -O /etc/init.d/brook; then
+		if ! wget --no-check-certificate "https://raw.githubusercontent.com/bobingski/doubi/master/service/brook_centos" -O /etc/init.d/brook; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && rm -rf "${file}" && exit 1
-		fi
 		chmod +x "/etc/init.d/brook"
 		chkconfig --add brook
 		chkconfig brook on
 	else
-		if ! wget --no-check-certificate "https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/brook_debian" -O /etc/init.d/brook; then
+		if ! wget --no-check-certificate "https://raw.githubusercontent.com/bobingski/doubi/master/service/brook_debian" -O /etc/init.d/brook;
+		then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && rm -rf "${file}" && exit 1
 		fi
 		chmod +x "/etc/init.d/brook"
@@ -262,8 +263,8 @@ check_port(){
 	check_port_1=$1
 	user_all=$(cat ${brook_conf}|sed '1d;/^\s*$/d')
 	#[[ -z "${user_all}" ]] && echo -e "${Error} Brook 配置文件中用户配置为空 !" && exit 1
-	check_port_statu=$(echo "${user_all}"|awk '{print $1}'|grep -w "${check_port_1}")
-	if [[ ! -z "${check_port_statu}" ]]; then
+	check_port_status=$(echo "${user_all}"|awk '{print $1}'|grep -w "${check_port_1}")
+	if [[ ! -z "${check_port_status}" ]]; then
 		return 0
 	else
 		return 1

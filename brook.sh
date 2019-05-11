@@ -73,7 +73,7 @@ check_new_ver(){
 	read -e -p "直接回车即自动获取:" brook_new_ver
 	if [[ -z ${brook_new_ver} ]]; then
 		# brook_new_ver=$(wget -qO- https://api.github.com/repos/txthinking/brook/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g')
-		brook_new_ver=$(curl -s https://api.github.com/repos/USER/REPO/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+		brook_new_ver=$(curl -s https://api.github.com/repos/txthinking/brook/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 		[[ -z ${brook_new_ver} ]] && echo -e "${Error} Brook 最新版本获取失败！" && exit 1
 		echo -e "${Info} 检测到 Brook 最新版本为 [ ${brook_new_ver} ]"
 	else
